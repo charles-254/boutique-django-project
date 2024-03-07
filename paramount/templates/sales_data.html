@@ -1,0 +1,48 @@
+{%  extends 'base.html' %}
+
+{% block content %}
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-2" >
+            <a href="{% url 'dashboard' %}" class="btn btn-outline-secondary my-3 mx-4">Go Back</a>
+            <a href="{% url 'search' %}" class="btn btn-outline-secondary my-3 mx-4">Filter</a>
+        </div>
+        <div class="col">
+            <h3 class="col-11 col-md-4 mx-auto mt-5">Sales</h3>
+            <table class="table table-hover table-striped">
+                <thead>
+                    <tr>
+                        <th scope="col">Code</th>
+                        <th scope="col">Price</th>
+                        <th scope="col">Quantity</th>
+                        <th scope="col">Total income</th>
+                        <th scope="col">Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if sales_data|length == 0 %}
+                        <tr>
+                            <th scope="row">-</th>
+                            <td>-</td>
+                            <td>-</td>
+                            <td>-</td>
+                            <td>-</td>
+
+                        </tr>
+                    {% endif %}
+                    {% for sales in sales_data %}
+                        <tr>
+                            <th scope="row">{{ sales.code }}</th>
+                            <td>{{ sales.price }}</td>
+                            <td>{{ sales.quantity }}</td>
+                            <td>{{ sales.total_income }}</td>
+                            <td>{{ sales.sales_date }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock content %}

@@ -1,0 +1,21 @@
+{% extends 'index_base.html' %}
+
+{% block content %}
+<div>
+    <h1 class="fw-dark col-11 col-md-4 mx-auto mt-5">WELCOME TO PARAMOUNT WARES</h1>
+    <div class="row">
+        <div class="col-5 border border-primary">
+            <p class="fw-light"> To view our products, click <b>PRODUCTS</b></p><br>
+            <p>To know more about us, click <b>ABOUT</b></p><br>
+            <p>To work with us meet us in our offices</p>
+        </div>
+        <div class="col-6 border border-primary">
+            <p>Use your logins to keep track of the sales you make and products available</p>
+            <div>
+                <a href="{% url 'login'%}" class="btn btn-primary"> Get Started Now</a>
+            </div>
+        </div>
+    </div>
+
+</div>
+{% endblock content %}
