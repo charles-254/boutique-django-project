@@ -12,8 +12,8 @@
     <div class="row">
         <div class="col-md-2" style="border-right: 3px solid #ddd;">
             <img class="img-responsive" src="images/login.png" alt="User Icon"><br>
-            <a href="#">home</a><br>
-            <p style="color:black">{{employee.salary}}</p>
+            <p class="font-italic text-muted">{% for employee in employees %}{{employee.employee_login.username}} {% endfor %}</p>
+            <a href="{% url 'your-profile' %}" class="btn btn-outline-primary ">your profile</a><br>
             <a href="#" class="btn btn-outline-primary my-2">record sales</a><br>
             <a href="{% url 'products' %}" class="btn btn-outline-primary ">products</a><br>
             <select id="dropdown" name="dropdown" class="btn btn-outline-primary my-2" onchange="redirectToUrl()">
@@ -56,4 +56,5 @@
         </div>
     </div>
 </div>
+
 {% endblock content %}

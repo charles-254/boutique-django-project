@@ -1,5 +1,5 @@
-from django.views.generic import TemplateView, View
-from django.contrib.auth import authenticate, login
+from django.views.generic import TemplateView, View, UpdateView
+from django.contrib.auth import login
 from django.shortcuts import render, redirect
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.decorators import login_required
@@ -7,6 +7,7 @@ from django.db import connection
 from django.contrib import messages
 from django.contrib.auth.models import User
 from datetime import datetime
+from django.urls import reverse_lazy
 from .forms import *
 
 class Index(TemplateView):
@@ -28,7 +29,6 @@ class LoginView(View):
             cursor.execute("SELECT id FROM paramount_employeelogin WHERE username = %s AND password = %s",
                             [LoginView.username, password])
             LoginView.row = cursor.fetchone() #we get a tuple containing the employee_id
-            print(LoginView.row ," -loginview")
         if LoginView.row is not None:
             employee_id = int(LoginView.row[0])
             try:
@@ -42,10 +42,8 @@ class LoginView(View):
         return render(request, 'login.html', {'form': form})
 
 class Dashboard(LoginRequiredMixin, View):
-    print(LoginView.row , " -dashboard")
     def get(self, request):
         employee_id = LoginView.row[0] if LoginView.row else None
-        print(employee_id)
         if employee_id:
             employees = Employee.objects.filter(pk=employee_id)
             products = Product.objects.all().order_by('id')
@@ -95,3 +93,27 @@ def Search_view(request):
         'objects': queryset
     }
     return render(request, 'search.html', context)
+
+class YourProfile(LoginRequiredMixin,View):
+    def get(self, request):
+        employee_id = LoginView.row[0]
+        employees = Employee.objects.filter(pk=employee_id)
+        return render(request, 'your_profile.html', {"employees": employees})
+
+class EditPersonalDetails(LoginRequiredMixin, UpdateView):
+    model = Employee
+    form_class = PersonalDetailsEditForm
+    template_name = 'edit_personal_details.html'
+    success_url = reverse_lazy('your-profile')
+
+    def get_object(self, queryset=None):
+        employee_pk = LoginView.row[0]
+        return Employee.objects.get(pk=employee_pk)
+
+    def get(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        return super().get(request, *args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        return super().post(request, *args, **kwargs)
