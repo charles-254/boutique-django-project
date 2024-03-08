@@ -50,7 +50,7 @@
                 </form>
             </div>
             <a href="{% url 'sales' %}" class="btn btn-outline-secondary my-2">all sales</a>
-            <a href="{% url 'dashboard' %}" class="btn btn-outline-secondary">Go Back</a>
+            <a href="{% url 'dashboard' %}" class="btn btn-outline-secondary">Dashboard</a>
         </div>
         <div class="col">
             <h3 class="col-11 col-md-4 mx-auto mt-5">Sales</h3>
@@ -58,6 +58,7 @@
                 <thead>
                     <tr>
                         <th scope="col">Code</th>
+                        <th scope="col">Name</th>
                         <th scope="col">Price</th>
                         <th scope="col">Quantity</th>
                         <th scope="col">Total income</th>
@@ -72,12 +73,14 @@
                             <td>-</td>
                             <td>-</td>
                             <td>-</td>
+                            <td>-</td>
 
                         </tr>
                     {% endif %}
                     {% for sales in objects %}
                         <tr>
                             <th scope="row">{{ sales.code }}</th>
+                            <td>{{ sales.name }}</td>
                             <td>{{ sales.price }}</td>
                             <td>{{ sales.quantity }}</td>
                             <td>{{ sales.total_income }}</td>
