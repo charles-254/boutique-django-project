@@ -11,6 +11,8 @@ urlpatterns = [
     path('sales/', SalesDataView.as_view(), name='sales'),
     path('search/', Search_view, name='search'),
     path('your-profile/', YourProfile.as_view(), name='your-profile'),
-    path('edit-details/<int:pk>', EditPersonalDetails.as_view(), name='edit-details'),
+    path('edit-details/', EditPersonalDetails.as_view(), name='edit-details'),
+    path('change-password/', ChangePassword.as_view(), name='change-password'),
+    path('pwd-recovery/', ForgotPassword.as_view(), name='pwd-recovery')
 ]
 urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

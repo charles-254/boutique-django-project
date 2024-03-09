@@ -41,6 +41,7 @@ class LoginView(View):
 
         return render(request, 'login.html', {'form': form})
 
+
 class Dashboard(LoginRequiredMixin, View):
     def get(self, request):
         employee_id = LoginView.row[0] if LoginView.row else None
@@ -100,20 +101,82 @@ class YourProfile(LoginRequiredMixin,View):
         employees = Employee.objects.filter(pk=employee_id)
         return render(request, 'your_profile.html', {"employees": employees})
 
-class EditPersonalDetails(LoginRequiredMixin, UpdateView):
-    model = Employee
-    form_class = PersonalDetailsEditForm
-    template_name = 'edit_personal_details.html'
-    success_url = reverse_lazy('your-profile')
+class EditPersonalDetails(LoginRequiredMixin, View):
+    def get(self, request):
+        ID = LoginView.row[0]
+        employee = Employee.objects.get(employee_login_id=ID)  # Assuming the employee you want to edit has id=1
+        initial_data = {
+            'first_name': employee.first_name,
+            'second_name': employee.second_name,
+            'surname': employee.surname,
+            'email': employee.email,
+            'phone': employee.phone,
+            'address': employee.address
+        }
+        form = PersonalDetailsEditForm(initial_data, instance=employee, employee_identity=ID)
+        return render(request, 'edit_personal_details.html', {'form': form})
 
-    def get_object(self, queryset=None):
-        employee_pk = LoginView.row[0]
-        return Employee.objects.get(pk=employee_pk)
+    def post(self, request):
+        form = PersonalDetailsEditForm(request.POST)
+        first_name = request.POST.get('first_name')
+        second_name = request.POST.get('second_name')
+        surname = request.POST.get('surname')
+        email = request.POST.get('email')
+        phone = request.POST.get('phone')
+        address = request.POST.get('address')
 
-    def get(self, request, *args, **kwargs):
-        self.object = self.get_object()
-        return super().get(request, *args, **kwargs)
+        employee_id = LoginView.row[0]
 
-    def post(self, request, *args, **kwargs):
-        self.object = self.get_object()
-        return super().post(request, *args, **kwargs)
+        with connection.cursor() as cursor:
+            cursor.execute("UPDATE paramount_employee SET first_name = %s, second_name = %s, surname = %s, email = %s, "
+                           "phone = %s, address = %s WHERE employee_login_id = %s",
+                           [first_name, second_name, surname, email, phone, address, employee_id])
+            connection.commit()
+        return redirect('your-profile')
+
+class ChangePassword(LoginRequiredMixin, View):
+    def get(self, request):
+        form = ChangePasswordForm()
+        return render(request, 'change_password.html', {'form': form})
+
+    def post(self, request):
+        form = ChangePasswordForm()
+        old_password = request.POST.get('old_password')
+        new_password = request.POST.get('new_password')
+
+        employee_id = LoginView.row[0]
+        with connection.cursor() as cursor:
+            cursor.execute("SELECT password FROM paramount_employeelogin WHERE  id = %s",
+                            [employee_id])
+            pwd = cursor.fetchone()
+
+        if pwd is not None:
+            passwd = pwd[0]
+            if old_password == passwd:
+                with connection.cursor() as cursor:
+                    cursor.execute("UPDATE paramount_employeelogin SET password = %s WHERE id = %s",
+                                   [new_password, employee_id])
+                messages.success(request, "password updated successfully")
+                return redirect('your-profile')
+
+            else:
+                messages.error(request, "wrong password")
+                return render(request, 'change_password.html', {'form': form})
+
+        return render(request, 'change_password.html', {'form': form})
+
+class ForgotPassword(View):
+    def get(self, request):
+        form = ForgotPasswordForm()
+        return render(request, 'change_password.html', {'form': form})
+
+    def post(self, request):
+        username = request.POST.get('username')
+
+        with connection.cursor() as cursor:
+            cursor.execute("SELECT password FROM paramount_employeelogin WHERE  username = %s",
+                            [username])
+            un = cursor.fetchone()
+            messages.success(request, f"your password is {un}")
+
+        return redirect('login')
