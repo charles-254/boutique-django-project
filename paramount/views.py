@@ -1,4 +1,4 @@
-from django.views.generic import TemplateView, View, UpdateView
+from django.views.generic import TemplateView, View
 from django.contrib.auth import login
 from django.shortcuts import render, redirect
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -7,6 +7,8 @@ from django.db import connection
 from django.contrib import messages
 from django.contrib.auth.models import User
 from datetime import datetime
+from django.forms import formset_factory
+from django.http import JsonResponse
 from django.urls import reverse_lazy
 from .forms import *
 
@@ -60,7 +62,7 @@ class Products(View):
         return render(request, 'products.html', {"products":products})
 
 class SalesDataView(LoginRequiredMixin,View):
-    print(LoginView.row , " -sales")
+    print(LoginView.row, " -sales")
     def get(self, request):
         employee_id = LoginView.row[0]
         sales_data = SalesData.objects.filter(employee_id=employee_id).order_by('-sales_date')
@@ -180,3 +182,46 @@ class ForgotPassword(View):
             messages.success(request, f"your password is {un}")
 
         return redirect('login')
+
+class Recordsales(View):
+    def get(self, request):
+        form = SalesForm()
+        return render(request, 'record_sales.html', {'form': form})
+
+    def post(self, request):
+        form = SalesForm(request.POST)
+        code = request.POST.get('code')
+        price = request.POST.get('price')
+        quantity_sold = request.POST.get('quantity')
+        total_income = int(quantity_sold) * int(price)
+        sales_date = datetime.now().strftime('%Y-%m-%d')
+        employee_id = LoginView.row[0]
+
+
+        with connection.cursor() as cursor:
+            cursor.execute("SELECT username FROM paramount_employeelogin WHERE id = %s",
+                           [employee_id])
+            un =cursor.fetchone()
+            username = un[0]
+
+            cursor.execute("SELECT name FROM paramount_salesdata WHERE code = %s",
+                           [code])
+            nm = cursor.fetchone()
+            product_name = nm[0]
+
+            cursor.execute(
+                "INSERT INTO paramount_salesdata(username,code,price,quantity,total_income,sales_date,employee_id, name) VALUES(%s, %s, %s, %s, %s, %s, %s, %s)",
+                [username, code, price, quantity_sold, total_income, sales_date, employee_id, product_name])
+
+            cursor.execute("SELECT quantity FROM paramount_product WHERE code = %s",
+                           [code])
+            qn = cursor.fetchone()
+            old_quantity = qn[0]
+            new_quantity = int(old_quantity) - int(quantity_sold)
+            cursor.execute("UPDATE paramount_product SET quantity = %s WHERE code = %s",
+                           [new_quantity, code])
+
+            messages.success(request,"Sales recorded succesfully")  # Return success response
+
+        return render(request, 'record_sales.html', {'form': form})
+

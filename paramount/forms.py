@@ -35,3 +35,18 @@ class ChangePasswordForm(forms.Form):
 
 class ForgotPasswordForm(forms.Form):
     username = forms.CharField(max_length=65,)
+
+
+class SalesForm(forms.Form):
+    code = forms.CharField(label='Product Code', max_length=100)
+    price = forms.DecimalField()
+    quantity = forms.DecimalField()
+
+
+    def __init__(self, *args, **kwargs):
+        self.request = kwargs.pop('request', None)
+        super(SalesForm, self).__init__(*args, **kwargs)
+
+    def clean(self):
+        cleaned_data = super(SalesForm, self).clean()
+        return cleaned_data

@@ -2,13 +2,22 @@
 {% load crispy_forms_tags %}
 
 {% block content%}
-<div class="alert alert-secondary" role="alert">
-    {% if messages %}
-            {% for message in messages %}
-                {% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}
-            {% endfor %}
-    {% endif %}
-</div>
+{% if messages %}
+    <div class="message-box" style="display: block; text-align: center; color: lime; font-size: 20px;">
+        {% for message in messages %}
+            {{ message }}
+        {% endfor %}
+        <button onclick="hideMessageBox()" class="btn btn-outline-secondary btn-sm">Hide</button>
+    </div>
+{% else %}
+    <div class="message-box" style="display: none;"></div>
+{% endif %}
+
+<script>
+    function hideMessageBox() {
+        document.querySelector('.message-box').style.display = 'none';
+    }
+</script>
 <div class="row">
     <div class="col-11 col-md-4 mx-auto mt-5">
         <h1>Log In</h1>

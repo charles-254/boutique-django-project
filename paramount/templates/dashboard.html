@@ -23,8 +23,8 @@
             <img src="{% static 'login.png' %}" alt="icon image" class="img-fluid"><br>
             <p class="text-warning">USERNAME: {% for employee in employees %}{{employee.employee_login.username}} {% endfor %}</p>
             <a href="{% url 'your-profile' %}" class="btn btn-outline-primary ">your profile</a><br>
-            <a href="#" class="btn btn-outline-primary my-2">record sales</a><br>
-            <a href="{% url 'products' %}" class="btn btn-outline-primary ">products</a><br>
+            <a href="{% url 'record-sales' %}" class="btn btn-outline-primary my-2">record sales</a><br>
+            <a href="{% url 'products' %}" class="btn btn-outline-primary my-2">products</a><br>
             <select id="dropdown" name="dropdown" class="btn btn-outline-primary my-2" onchange="redirectToUrl()">
 
                 <option value="{% url 'sales' %}">all sales made</option>

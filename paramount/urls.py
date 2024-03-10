@@ -13,6 +13,7 @@ urlpatterns = [
     path('your-profile/', YourProfile.as_view(), name='your-profile'),
     path('edit-details/', EditPersonalDetails.as_view(), name='edit-details'),
     path('change-password/', ChangePassword.as_view(), name='change-password'),
-    path('pwd-recovery/', ForgotPassword.as_view(), name='pwd-recovery')
+    path('pwd-recovery/', ForgotPassword.as_view(), name='pwd-recovery'),
+    path('record-sales/', Recordsales.as_view(), name='record-sales')
 ]
 urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

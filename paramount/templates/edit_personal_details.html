@@ -2,6 +2,22 @@
 {% load crispy_forms_tags %}
 
 {% block content %}
+{% if messages %}
+    <div class="message-box" style="display: block; text-align: center; color: lime; font-size: 20px;">
+        {% for message in messages %}
+            {{ message }}
+        {% endfor %}
+        <button onclick="hideMessageBox()" class="btn btn-outline-secondary btn-sm">Hide</button>
+    </div>
+{% else %}
+    <div class="message-box" style="display: none;"></div>
+{% endif %}
+
+<script>
+    function hideMessageBox() {
+        document.querySelector('.message-box').style.display = 'none';
+    }
+</script>
 <a href="{% url 'your-profile' %}" class="btn btn=outline-primary my-3 mx-4">Go Back</a>
 <div class="row">
     <div class="cil-11 col-md-4 mx-auto mt-5">

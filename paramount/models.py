@@ -7,7 +7,7 @@ class EmployeeLogin(models.Model):
 
 
     def __str__(self):
-        return f"EmployeeLogin username ({self.username }) id ({self.pk})"
+        return f"Username ({self.username })"
 
 class Employee(models.Model):
     national_ID = models.IntegerField(unique=True)
@@ -24,7 +24,7 @@ class Employee(models.Model):
 
 
     def __str__(self):
-        return f"Employee first name ({self.first_name }) id ({self.pk})"
+        return f"Employee username ({self.employee_login.username })"
 
 class Product(models.Model):
     code = models.CharField(max_length=25, unique=True)
@@ -33,12 +33,13 @@ class Product(models.Model):
     quantity = models.IntegerField()
 
     def __str__(self):
-        return f"Product code ({self.code})"
+        return f"Product name ({self.name}) code ({self.code})"
 
 class SalesData(models.Model):
     employee = models.ForeignKey(Employee, on_delete=models.CASCADE)
     username = models.CharField(max_length=25)
     code = models.CharField(max_length=25)
+    name = models.CharField(max_length=25)
     price = models.IntegerField()
     quantity = models.IntegerField()
     total_income = models.IntegerField()
